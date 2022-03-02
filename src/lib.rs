@@ -1,5 +1,13 @@
 extern crate num_traits;
 
-pub mod numeric;
+pub mod simple_nums;
 
-pub type MatchResult = Result<(), String>;
+mod assertions;
+mod values;
+
+pub struct Actual<T> {
+    value: T,
+    description_func: fn(&T) -> String,
+}
+
+pub type Expected<T> = Actual<T>;
