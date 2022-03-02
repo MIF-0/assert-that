@@ -1,6 +1,7 @@
 extern crate num_traits;
 
-pub mod simple_nums;
+pub mod simple_num_assertions;
+pub mod string_assertion;
 
 mod assertions;
 mod values;

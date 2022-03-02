@@ -1,7 +1,7 @@
 use num_traits::Num;
 use crate::{Actual, Expected};
 
-use crate::assertions::{Equals, Greater, GreaterOrEqual, Less, LessOrEqual};
+use crate::assertions::{Equals, Greater, GreaterOrEqual, Less, LessOrEqual, NotEquals};
 
 pub struct NumericAssert<T>
 where T: Num + PartialOrd {
@@ -16,6 +16,10 @@ impl<T> NumericAssert<T>
  }
 
  pub fn is_equal(self) -> Box<dyn Equals<T>> {
+  Box::new(self)
+ }
+
+ pub fn is_not_equal(self) -> Box<dyn NotEquals<T>> {
   Box::new(self)
  }
 
@@ -41,6 +45,15 @@ impl<T> Equals<T> for NumericAssert<T>
  fn to(&self, expected: Expected<T>) {
   if self.actual.ne(&expected) {
    panic!("Result \n {} \n not equal to expected \n {}", self.actual, expected);
+  }
+ }
+}
+
+impl<T> NotEquals<T> for NumericAssert<T>
+ where T: Num + PartialOrd {
+ fn to(&self, expected: Expected<T>) {
+  if self.actual.eq(&expected) {
+   panic!("Result \n {} \n is equal to expected \n {}", self.actual, expected);
   }
  }
 }
