@@ -27,3 +27,7 @@ pub trait GreaterOrEqual<T> {
 pub trait Length<T> {
     fn is(&self, expected: Expected<T>);
 }
+
+pub trait Matches<T> {
+    fn to(&self, expected: Expected<T>);
+}
