@@ -60,7 +60,7 @@ impl<T> NotEquals<T> for NumericAssert<T>
 
 impl<T> Less<T> for NumericAssert<T>
  where T: Num + PartialOrd {
- fn then(&self, expected: Expected<T>) {
+ fn than(&self, expected: Expected<T>) {
   if self.actual.value >= expected.value {
    panic!("Result \n {} \n is bigger or equal to expected \n {}", self.actual, expected);
   }
@@ -78,7 +78,7 @@ impl<T> LessOrEqual<T> for NumericAssert<T>
 
 impl<T> Greater<T> for NumericAssert<T>
  where T: Num + PartialOrd {
- fn then(&self, expected: Expected<T>) {
+ fn than(&self, expected: Expected<T>) {
   if self.actual.value <= expected.value {
    panic!("Result \n {} \n is smaller or equal to expected \n {}", self.actual, expected);
   }

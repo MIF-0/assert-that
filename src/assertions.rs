@@ -9,11 +9,11 @@ pub trait NotEquals<T> {
 }
 
 pub trait Greater<T> {
-    fn then(&self, expected: Expected<T> );
+    fn than(&self, expected: Expected<T> );
 }
 
 pub trait Less<T> {
-    fn then(&self, expected: Expected<T>);
+    fn than(&self, expected: Expected<T>);
 }
 
 pub trait LessOrEqual<T> {
@@ -21,7 +21,7 @@ pub trait LessOrEqual<T> {
 }
 
 pub trait GreaterOrEqual<T> {
-    fn to(&self, expected: Expected<T> );
+    fn to(&self, expected: Expected<T>);
 }
 
 pub trait Length<T> {
