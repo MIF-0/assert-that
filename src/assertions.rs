@@ -31,3 +31,7 @@ pub trait Length<T> {
 pub trait Matches<T> {
     fn to(&self, expected: Expected<T>);
 }
+
+pub trait Contains<T> {
+    fn contains(&self, expected: Expected<T>);
+}

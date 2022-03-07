@@ -28,7 +28,7 @@ impl<T> Matches<T> for CustomMatcher<T> {
     fn to(&self, expected: Expected<T>) {
         let success = (self.matcher)(&self.actual.value, &expected.value);
         if !success {
-            panic!("Result \n {} \n not matches with \n {}", self.actual, expected);
+            panic!("\n Actual: {} \n not matches with \n {} \n", self.actual, expected);
         }
     }
 }

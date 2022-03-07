@@ -1,2 +1,3 @@
-pub mod string_equals_test;
-mod string_length_test;
+mod equals_test;
+mod length_test;
+mod contains;

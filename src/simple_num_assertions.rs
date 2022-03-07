@@ -44,7 +44,7 @@ impl<T> Equals<T> for NumericAssert<T>
  where T: Num + PartialOrd {
  fn to(&self, expected: Expected<T>) {
   if self.actual.ne(&expected) {
-   panic!("Result \n {} \n not equal to expected \n {}", self.actual, expected);
+   panic!("\n Actual: {} \n not equal to expected \n {} \n", self.actual, expected);
   }
  }
 }
@@ -53,7 +53,7 @@ impl<T> NotEquals<T> for NumericAssert<T>
  where T: Num + PartialOrd {
  fn to(&self, expected: Expected<T>) {
   if self.actual.eq(&expected) {
-   panic!("Result \n {} \n is equal to expected \n {}", self.actual, expected);
+   panic!("\n Actual: {} \n is equal to expected \n {} \n", self.actual, expected);
   }
  }
 }
@@ -62,7 +62,7 @@ impl<T> Less<T> for NumericAssert<T>
  where T: Num + PartialOrd {
  fn than(&self, expected: Expected<T>) {
   if self.actual.value >= expected.value {
-   panic!("Result \n {} \n is bigger or equal to expected \n {}", self.actual, expected);
+   panic!("\n Actual: {} \n is bigger or equal to expected \n {} \n", self.actual, expected);
   }
  }
 }
@@ -71,7 +71,7 @@ impl<T> LessOrEqual<T> for NumericAssert<T>
  where T: Num + PartialOrd {
  fn to(&self, expected: Expected<T>) {
   if self.actual.value > expected.value {
-   panic!("Result \n {} \n is bigger to expected \n {}", self.actual, expected);
+   panic!("\n Actual: {} \n is bigger to expected \n {} \n", self.actual, expected);
   }
  }
 }
@@ -80,7 +80,7 @@ impl<T> Greater<T> for NumericAssert<T>
  where T: Num + PartialOrd {
  fn than(&self, expected: Expected<T>) {
   if self.actual.value <= expected.value {
-   panic!("Result \n {} \n is smaller or equal to expected \n {}", self.actual, expected);
+   panic!("\n Actual: {} \n is smaller or equal to expected \n {} \n", self.actual, expected);
   }
  }
 }
@@ -89,7 +89,7 @@ impl<T> GreaterOrEqual<T> for NumericAssert<T>
  where T: Num + PartialOrd {
  fn to(&self, expected: Expected<T>) {
   if self.actual.value < expected.value {
-   panic!("Result \n {} \n is smaller to expected \n {}", self.actual, expected);
+   panic!("\n Actual: {} \n is smaller to expected \n {} \n", self.actual, expected);
   }
  }
 }

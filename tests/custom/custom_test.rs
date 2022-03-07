@@ -1,13 +1,12 @@
-use assert_that::{Actual, Expected};
+use assert_that::{actual, actual_with, expected, expected_with};
 use assert_that::custom_matcher::CustomAssert;
 
 #[test]
 pub fn same_should_be_equal() {
     let value = String::from("a");
-
-    CustomAssert::assert_that(Actual::create_for(value.clone()))
+    CustomAssert::assert_that(actual(value.clone()))
         .matches_by(|a, b| a.eq(b))
-        .to(Expected::create_for(value.clone()));
+        .to(expected(value.clone()));
 }
 
 #[test]
@@ -16,9 +15,9 @@ pub fn not_equal() {
     let val1 = String::from("a");
     let val2 = String::from("c");
 
-    CustomAssert::assert_that(Actual::create_for(val1))
+    CustomAssert::assert_that(actual(val1))
         .matches_by(|a, b| a.eq(b))
-        .to(Expected::create_for(val2));
+        .to(expected(val2));
 }
 
 #[test]
@@ -34,9 +33,9 @@ pub fn same_custom_struct_should_be_equal() {
         c: false
     };
 
-    CustomAssert::assert_that(Actual::new(val1, custom_description))
+    CustomAssert::assert_that(actual_with(val1, custom_description))
         .matches_by(custom_match)
-        .to(Expected::new(val2, custom_description));
+        .to(expected_with(val2, custom_description));
 }
 
 #[test]
@@ -53,9 +52,9 @@ pub fn different_custom_struct_not_equal() {
         c: false
     };
 
-    CustomAssert::assert_that(Actual::new(val1, custom_description))
+    CustomAssert::assert_that(actual_with(val1, custom_description))
         .matches_by(custom_match)
-        .to(Expected::new(val2, custom_description));
+        .to(expected_with(val2, custom_description));
 }
 
 struct TestStruct {
