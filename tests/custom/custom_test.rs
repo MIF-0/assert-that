@@ -1,5 +1,5 @@
-use assert_that::{actual, actual_with, expected, expected_with};
 use assert_that::custom_matcher::CustomAssert;
+use assert_that::{actual, actual_with, expected, expected_with};
 
 #[test]
 pub fn same_should_be_equal() {
@@ -25,12 +25,12 @@ pub fn same_custom_struct_should_be_equal() {
     let val1 = TestStruct {
         a: 1,
         b: String::from("a"),
-        c: false
+        c: false,
     };
     let val2 = TestStruct {
         a: 1,
         b: String::from("a"),
-        c: false
+        c: false,
     };
 
     CustomAssert::assert_that(actual_with(val1, custom_description))
@@ -44,12 +44,12 @@ pub fn different_custom_struct_not_equal() {
     let val1 = TestStruct {
         a: 1,
         b: String::from("a"),
-        c: false
+        c: false,
     };
     let val2 = TestStruct {
         a: 1,
         b: String::from("b"),
-        c: false
+        c: false,
     };
 
     CustomAssert::assert_that(actual_with(val1, custom_description))
@@ -64,11 +64,12 @@ struct TestStruct {
 }
 
 fn custom_match(val1: &TestStruct, val2: &TestStruct) -> bool {
-    val1.a == val2.a
-        && val1.b.eq(&val2.b)
-        && val1.c == val2.c
+    val1.a == val2.a && val1.b.eq(&val2.b) && val1.c == val2.c
 }
 
 fn custom_description(value: &TestStruct) -> String {
-    format!("TestStruct:\n a = {}\n, b = {}\n, c = {}", value.a, value.b, value.c)
+    format!(
+        "TestStruct:\n a = {}\n, b = {}\n, c = {}",
+        value.a, value.b, value.c
+    )
 }

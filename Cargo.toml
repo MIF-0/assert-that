@@ -1,7 +1,15 @@
 [package]
-name = "assert-that"
+name = "easy-assert"
 version = "0.1.0"
 edition = "2021"
+description = "A library for readable assertions in your tests"
+keywords = ["testing", "assertions", "tdd", "assert-that", "bdd"]
+categories = ["development-tools", "development-tools::testing"]
+license = "MIT/Apache-2.0"
+repository = "https://github.com/MIF-0/easy-assert"
+documentation = "https://docs.rs/easy-assert"
+readme = "README.md"
+authors = ["Vladyslav Bukatin <ender.ender321.@gmail.com>"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

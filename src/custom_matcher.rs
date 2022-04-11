@@ -1,12 +1,14 @@
-use crate::{Actual, Expected};
 use crate::assertions::Matches;
+use crate::{Actual, Expected};
 
 pub struct CustomAssert<T> {
     actual: Actual<T>,
 }
 
 impl<T> CustomAssert<T>
-    where T: 'static {
+where
+    T: 'static,
+{
     pub fn assert_that(actual: Actual<T>) -> CustomAssert<T> {
         CustomAssert { actual }
     }
@@ -28,7 +30,10 @@ impl<T> Matches<T> for CustomMatcher<T> {
     fn to(&self, expected: Expected<T>) {
         let success = (self.matcher)(&self.actual.value, &expected.value);
         if !success {
-            panic!("\n Actual: {} \n not matches with \n {} \n", self.actual, expected);
+            panic!(
+                "\n Actual: {} \n not matches with \n {} \n",
+                self.actual, expected
+            );
         }
     }
 }

@@ -12,7 +12,9 @@ impl<T> Actual<T> {
 }
 
 impl<T> Actual<T>
-    where T: Display {
+where
+    T: Display,
+{
     pub fn create_for(value: T) -> Actual<T> {
         Actual {
             value,
@@ -28,7 +30,9 @@ impl<T> Display for Actual<T> {
 }
 
 impl<T> PartialEq for Actual<T>
-    where T: PartialEq {
+where
+    T: PartialEq,
+{
     fn eq(&self, other: &Self) -> bool {
         self.value.eq(&other.value)
     }
