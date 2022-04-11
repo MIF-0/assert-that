@@ -1,5 +1,5 @@
-use assert_that::num_assertions::NumericAssert;
-use assert_that::{actual, expected};
+use easy_assert::num_assertions::NumericAssert;
+use easy_assert::{actual, expected};
 
 #[test]
 pub fn positive_numbers_less_success_case() {

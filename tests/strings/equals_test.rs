@@ -1,5 +1,5 @@
-use assert_that::string_assertions::StringAssert;
-use assert_that::{actual, expected};
+use easy_assert::string_assertions::StringAssert;
+use easy_assert::{actual, expected};
 
 #[test]
 pub fn same_should_be_equal() {

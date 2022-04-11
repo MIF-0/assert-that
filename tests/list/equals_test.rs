@@ -1,5 +1,5 @@
-use assert_that::list_assertions::ListAssert;
-use assert_that::{actual_vec, expected_vec};
+use easy_assert::list_assertions::ListAssert;
+use easy_assert::{actual_vec, expected_vec};
 
 #[test]
 pub fn same_should_be_equal_in_order() {

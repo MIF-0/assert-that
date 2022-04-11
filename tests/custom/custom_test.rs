@@ -1,5 +1,5 @@
-use assert_that::custom_matcher::CustomAssert;
-use assert_that::{actual, actual_with, expected, expected_with};
+use easy_assert::custom_matcher::CustomAssert;
+use easy_assert::{actual, actual_with, expected, expected_with};
 
 #[test]
 pub fn same_should_be_equal() {
