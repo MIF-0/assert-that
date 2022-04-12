@@ -1,3 +1,34 @@
+//! ## Usage
+//!
+//! ``` rust
+//! use easy_assert::{actual, Actual, expected, Expected};
+//! use easy_assert::num_assertions::NumericAssert;
+//!
+//!  NumericAssert::<i32>::assert_that(actual(1))
+//!  .is_equal()
+//!  .to(expected(1));
+//!
+//!  NumericAssert::<i32>::assert_that(actual(-1))
+//!  .is_not_equal()
+//!  .to(expected(1));
+//!
+//!  NumericAssert::<i32>::assert_that(actual(2))
+//!  .is_greater_or_equal()
+//!  .to(expected(1));
+//!
+//!  NumericAssert::<i32>::assert_that(actual(2))
+//!  .is_greater()
+//!  .than(expected(1));
+//!
+//!  NumericAssert::<i32>::assert_that(actual(1))
+//!  .is_less_or_equal()
+//!  .to(expected(1));
+//!
+//!  NumericAssert::<i32>::assert_that(actual(1))
+//!  .is_less()
+//!  .than(expected(3));
+//! ```
+
 use crate::{Actual, Expected};
 use num_traits::Num;
 

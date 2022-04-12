@@ -1,3 +1,75 @@
+//! ## Usage
+//!
+//! ``` rust
+//! use easy_assert::{actual_vec, expected_vec};
+//! use easy_assert::list_assertions::ListAssert;
+//!
+//!  ListAssert::assert_that(actual_vec(vec![1, 2, 3]))
+//!  .with_element_matcher(|a, b| a.eq(b))
+//!  .is_equal_to(expected_vec(vec![3, 2, 1]))
+//!  .in_any_order();
+//!
+//!  ListAssert::assert_that(actual_vec(vec![1, 2, 3]))
+//!  .with_element_matcher(|a, b| a.eq(b))
+//!  .is_equal_to(expected_vec(vec![1, 2, 3]))
+//!  .in_order();
+//!
+//!  ListAssert::assert_that(actual_vec(vec![2, 3, 1, 2, 3, 4, 5]))
+//!  .with_element_matcher(|a, b| a.eq(b))
+//!  .contains(expected_vec(vec![2, 3, 4]))
+//!  .in_exact_order();
+//!
+//!  ListAssert::assert_that(actual_vec(vec![2, 1, 3, 5, 4]))
+//!  .with_element_matcher(|a, b| a.eq(b))
+//!  .contains(expected_vec(vec![2, 3, 4]))
+//!  .just_in_order();
+//!
+//!  ListAssert::assert_that(actual_vec(vec![2, 1, 3, 5, 4]))
+//!  .with_element_matcher(|a, b| a.eq(b))
+//!  .contains(expected_vec(vec![5, 1, 2]))
+//!  .in_any_order();
+//! ```
+//!
+//! ### Custom objects
+//!
+//! ``` rust
+//! use easy_assert::{actual_vec_with, expected_vec_with};
+//! use easy_assert::list_assertions::ListAssert;
+//!
+//! #[derive(Clone)]
+//! struct CustomObject {
+//!     a: String,
+//!     b: u32,
+//!     c: bool,
+//! }
+//!
+//! fn custom_match(value1: &CustomObject, value2: &CustomObject) -> bool {
+//!     value1.a.eq(&value2.a) && value1.b == value2.b && value1.c == value2.c
+//! }
+//!
+//! fn custom_describe(val: &CustomObject) -> String {
+//!     format!(
+//!         "CustomObject: \n a: {} \n b: {} \n c: {}",
+//!         val.a, val.b, val.c
+//!     )
+//! }
+//!
+//! #[test]
+//! fn my_test() {
+//!     let obj1 = CustomObject {a: String::from("a"),b: 1, c: true};
+//!     let obj2 = CustomObject {a: String::from("b"),b: 2, c: true};
+//!     let obj2 = CustomObject {a: String::from("c"),b: 3, c: false};
+//!
+//!      ListAssert::assert_that(actual_vec_with(
+//!          vec![obj1.clone(), obj2.clone(), obj3.clone()],
+//!          custom_describe,
+//!      ))
+//!      .with_element_matcher(custom_match)
+//!      .is_equal_to(expected_vec_with(vec![obj1, obj2, obj3], custom_describe))
+//!      .in_order()
+//! }
+//! ```
+
 use crate::assertions::{CollectionContains, CollectionEqual, Length};
 use crate::{Actual, Expected};
 use std::collections::HashMap;
@@ -217,7 +289,7 @@ impl<T> CollectionContains<T> for ListFinalAssert<T> {
         for expected_elem in &self.expected {
             for actual_index in prev_number_index..self.actual.len() {
                 let actual_elem = &self.actual[actual_index];
-                if (self.element_matcher)(&actual_elem.value, &expected_elem.value){
+                if (self.element_matcher)(&actual_elem.value, &expected_elem.value) {
                     prev_number_index = actual_index;
                     matched_length = matched_length + 1;
                     break;

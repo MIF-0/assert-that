@@ -1,4 +1,4 @@
-use easy_assert::custom_matcher::CustomAssert;
+use easy_assert::custom_assertions::CustomAssert;
 use easy_assert::{actual, actual_with, expected, expected_with};
 
 #[test]

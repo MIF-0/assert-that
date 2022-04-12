@@ -1,4 +1,4 @@
-assert-that crate, which will help you to create better tests
+easy-assert crate, which will help you to create better tests
 
 Add dependency to your `Cargo.toml`
 ```

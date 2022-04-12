@@ -1,3 +1,25 @@
+//! ## Usage
+//!
+//! ``` rust
+//! use easy_assert::{actual, expected};
+//! use easy_assert::string_assertions::StringAssert;
+//!
+//!  StringAssert::assert_that(actual(String::from("a")))
+//!  .is_equal()
+//!  .to(expected(String::from("a")));
+//!
+//!  StringAssert::assert_that(actual(String::from("a")))
+//!  .is_not_equal()
+//!  .to(expected(String::from("b")));
+//!
+//!  StringAssert::assert_that(actual(String::from("abcde")))
+//!  .contains(expected(String::from("bcd")));
+//!
+//!  StringAssert::assert_that(actual(String::from("abcde")))
+//!  .length()
+//!  .is(expected(5));
+//! ```
+
 use crate::assertions::{Contains, Equals, Length, NotEquals};
 use crate::{Actual, Expected};
 
