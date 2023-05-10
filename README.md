@@ -3,7 +3,7 @@ easy-assert crate, which will help you to create better tests
 Add dependency to your `Cargo.toml`
 ```
 [dev-dependencies]
-assert-that = "0.1.0"
+assert-that = "0.1.4"
 ```
 
 

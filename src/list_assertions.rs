@@ -79,8 +79,8 @@ pub struct ListAssert<T> {
 }
 
 impl<T> ListAssert<T>
-    where
-        T: 'static,
+where
+    T: 'static,
 {
     pub fn assert_that(actual: Vec<Actual<T>>) -> ListAssert<T> {
         ListAssert { actual }
@@ -104,8 +104,8 @@ pub struct ListElementAssert<T> {
 }
 
 impl<T> ListElementAssert<T>
-    where
-        T: 'static,
+where
+    T: 'static,
 {
     pub fn contains(self, expected: Vec<Expected<T>>) -> Box<dyn CollectionContains<T>> {
         Box::new(ListFinalAssert {
@@ -170,7 +170,11 @@ impl<T> ListFinalAssert<T> {
         }
     }
 
-    fn get_unchecked_index(&self, expected_elem: &Expected<T>, checked_actual_indexes: &Vec<usize>) -> Option<usize> {
+    fn get_unchecked_index(
+        &self,
+        expected_elem: &Expected<T>,
+        checked_actual_indexes: &Vec<usize>,
+    ) -> Option<usize> {
         for (actual_index, actual_elem) in self.actual.iter().enumerate() {
             let actual_index_was_checked = checked_actual_indexes.get(actual_index).is_some();
             if actual_index_was_checked {
@@ -201,9 +205,8 @@ impl<T> ListFinalAssert<T> {
     }
 
     fn vec_to_string(vec: &Vec<Actual<T>>) -> String {
-        vec
-            .iter()
-            .map(|val| { val.to_string() })
+        vec.iter()
+            .map(|val| val.to_string())
             .collect::<Vec<String>>()
             .join("\n")
     }
@@ -261,7 +264,8 @@ impl<T> CollectionContains<T> for ListFinalAssert<T> {
         let mut checked_actual_indexes: Vec<usize> = Vec::new();
         let mut matched = false;
         loop {
-            let starting_position = self.get_unchecked_index(first_expected_elem, &checked_actual_indexes);
+            let starting_position =
+                self.get_unchecked_index(first_expected_elem, &checked_actual_indexes);
             if starting_position.is_none() {
                 break;
             }
@@ -275,9 +279,10 @@ impl<T> CollectionContains<T> for ListFinalAssert<T> {
         }
 
         if !matched {
-            panic!("\n the actual vec \n {} \n doesn't contains expected vec {} \n in exact order",
-                   Self::vec_to_string(&self.actual),
-                   Self::vec_to_string(&self.expected)
+            panic!(
+                "\n the actual vec \n {} \n doesn't contains expected vec {} \n in exact order",
+                Self::vec_to_string(&self.actual),
+                Self::vec_to_string(&self.expected)
             );
         }
     }

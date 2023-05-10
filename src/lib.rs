@@ -4,13 +4,13 @@
 //! and you can do your own custom assertions
 //! Everything divided by modules. Check each module for usage example.
 
-
 extern crate alloc;
 extern crate core;
 extern crate num_traits;
 
 use core::fmt::Display;
 
+pub mod bool_assertions;
 pub mod custom_assertions;
 pub mod list_assertions;
 pub mod num_assertions;

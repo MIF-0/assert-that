@@ -1,3 +1,4 @@
+mod bool;
 mod custom;
 mod list;
 mod numeric;

@@ -28,6 +28,12 @@ pub trait Length {
     fn is(&self, expected: Expected<usize>);
 }
 
+pub trait BooleanCheck {
+    fn is_true(&self);
+
+    fn is_false(&self);
+}
+
 pub trait Matches<T> {
     fn to(&self, expected: Expected<T>);
 }
