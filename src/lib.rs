@@ -14,6 +14,7 @@ pub mod bool_assertions;
 pub mod custom_assertions;
 pub mod list_assertions;
 pub mod num_assertions;
+pub mod option_assertions;
 pub mod string_assertions;
 
 mod assertions;

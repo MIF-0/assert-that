@@ -34,6 +34,12 @@ pub trait BooleanCheck {
     fn is_false(&self);
 }
 
+pub trait OptionCheck {
+    fn is_none(&self);
+
+    fn is_some(&self);
+}
+
 pub trait Matches<T> {
     fn to(&self, expected: Expected<T>);
 }

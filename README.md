@@ -26,6 +26,10 @@ Available assertions:
 
 `StringAssert -> is_equal, is_not_equal, length, contains`
 
+`BooleanAssert -> is_true, is_false`
+
+`OptionAssert -> is_none, is_some, contains` for now only with custom assertion or with list assertion
+
 ```
 ListAssert -> 
     length;
