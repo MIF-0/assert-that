@@ -58,7 +58,7 @@
 //! fn my_test() {
 //!     let obj1 = CustomObject {a: String::from("a"),b: 1, c: true};
 //!     let obj2 = CustomObject {a: String::from("b"),b: 2, c: true};
-//!     let obj2 = CustomObject {a: String::from("c"),b: 3, c: false};
+//!     let obj3 = CustomObject {a: String::from("c"),b: 3, c: false};
 //!
 //!      ListAssert::assert_that(actual_vec_with(
 //!          vec![obj1.clone(), obj2.clone(), obj3.clone()],
@@ -71,7 +71,7 @@
 //! ```
 
 use crate::assertions::{CollectionContains, CollectionEqual, Length};
-use crate::{Actual, Expected};
+use crate::{test_failed, Actual, Expected};
 use std::collections::HashMap;
 
 pub struct ListAssert<T> {
@@ -131,6 +131,13 @@ struct ListFinalAssert<T> {
 }
 
 impl<T> ListFinalAssert<T> {
+    fn vec_to_string(vec: &[Actual<T>]) -> String {
+        vec.iter()
+            .map(|val| val.to_string())
+            .collect::<Vec<String>>()
+            .join(",")
+    }
+
     fn in_any_order_ignore_size(&self) {
         //[1,2,3,4,5].contains[5,3,1]
         let mut equals_indexes: HashMap<usize, usize> = HashMap::new();
@@ -155,25 +162,21 @@ impl<T> ListFinalAssert<T> {
             }
             if !match_found {
                 errors.push(format!(
-                    "Expected element:\n [{}]\n was not found",
+                    "   - Expected element: ({}) - Not found",
                     expected_elem
                 ));
             }
         }
 
-        if errors.len() != 0 {
-            panic!(
-                "\n {} \n Actual vec: \n[{}]\n",
-                errors.join("\n"),
-                Self::vec_to_string(&self.actual)
-            )
+        if !errors.is_empty() {
+            self.list_test_failed(&errors.join("\n"));
         }
     }
 
     fn get_unchecked_index(
         &self,
         expected_elem: &Expected<T>,
-        checked_actual_indexes: &Vec<usize>,
+        checked_actual_indexes: &[usize],
     ) -> Option<usize> {
         for (actual_index, actual_elem) in self.actual.iter().enumerate() {
             let actual_index_was_checked = checked_actual_indexes.get(actual_index).is_some();
@@ -192,10 +195,13 @@ impl<T> ListFinalAssert<T> {
         let mut matches_length = 0;
         for (expected_index, expected_elem) in self.expected.iter().enumerate() {
             let actual_index = expected_index + starting_position;
+            if actual_index >= self.actual.len() {
+                return false;
+            }
             let actual_elem = &self.actual[actual_index];
 
             if (self.element_matcher)(&actual_elem.value, &expected_elem.value) {
-                matches_length = matches_length + 1;
+                matches_length += 1;
             } else {
                 break;
             }
@@ -204,35 +210,42 @@ impl<T> ListFinalAssert<T> {
         matches_length == self.expected.len()
     }
 
-    fn vec_to_string(vec: &Vec<Actual<T>>) -> String {
-        vec.iter()
-            .map(|val| val.to_string())
-            .collect::<Vec<String>>()
-            .join("\n")
+    fn actual_len_ge_expected(&self) -> Result<(), String> {
+        if self.actual.len() < self.expected.len() {
+            return Err(format!(
+                "\n The actual vec size ({}) is LESS then expected vec ({})\n",
+                self.actual.len(),
+                self.expected.len()
+            ));
+        };
+        Ok(())
+    }
+
+    fn list_test_failed(&self, error_message: &str) {
+        let list_error_message = format!(
+            "Actual vec: [{}] \n Expected vec: [{}] \n Detailed error: \n {}",
+            Self::vec_to_string(&self.actual),
+            Self::vec_to_string(&self.expected),
+            error_message
+        );
+        test_failed(&list_error_message);
     }
 }
 
 impl<T> CollectionEqual<T> for ListFinalAssert<T> {
     fn in_any_order(&self) {
-        if self.actual.len() != self.expected.len() {
-            panic!(
-                "\n Collection size: {} \n  not equal to expected \n {} \n",
-                self.actual.len(),
-                self.expected.len()
-            );
+        let error = length_check(self.actual.len(), self.expected.len()).err();
+        if let Some(error_message) = error {
+            self.list_test_failed(&error_message);
         }
         self.in_any_order_ignore_size();
     }
 
     fn in_order(&self) {
-        if self.actual.len() != self.expected.len() {
-            panic!(
-                "\n Collection size: {} \n  not equal to expected \n {} \n",
-                self.actual.len(),
-                self.expected.len()
-            );
+        let error = length_check(self.actual.len(), self.expected.len()).err();
+        if let Some(error_message) = error {
+            self.list_test_failed(&error_message);
         }
-
         let mut errors: Vec<String> = vec![];
 
         for index in 0..self.actual.len() {
@@ -240,14 +253,15 @@ impl<T> CollectionEqual<T> for ListFinalAssert<T> {
             let expected_elem = &self.expected[index];
             if !(self.element_matcher)(&actual_elem.value, &expected_elem.value) {
                 errors.push(format!(
-                    "Actual element:\n [{}]\n not equal to expected: \n[{}]\n in position [{}]\n",
+                    "Actual element: ({}) not equal to expected: ({}) in position ({})\n",
                     actual_elem, expected_elem, index
                 ));
             }
         }
 
-        if errors.len() != 0 {
-            panic!("\n {}", errors.join("\n"));
+        if !errors.is_empty() {
+            let error_message = format!("\n {}", errors.join("\n"));
+            self.list_test_failed(&error_message);
         }
     }
 }
@@ -259,6 +273,10 @@ impl<T> CollectionContains<T> for ListFinalAssert<T> {
 
     fn in_exact_order(&self) {
         //[1,2,2,2,5,2,3,4,5].contains[2,3,4]
+        let error = self.actual_len_ge_expected().err();
+        if let Some(error_message) = error {
+            self.list_test_failed(&error_message);
+        }
 
         let first_expected_elem = &self.expected[0];
         let mut checked_actual_indexes: Vec<usize> = Vec::new();
@@ -279,47 +297,56 @@ impl<T> CollectionContains<T> for ListFinalAssert<T> {
         }
 
         if !matched {
-            panic!(
-                "\n the actual vec \n {} \n doesn't contains expected vec {} \n in exact order",
-                Self::vec_to_string(&self.actual),
-                Self::vec_to_string(&self.expected)
+            self.list_test_failed(
+                "\n the Actual vec  doesn't contains Expected vec in Exact order",
             );
         }
     }
 
     fn just_in_order(&self) {
         //[1,2,8,9,5,7,3,1,4].contains[2,3,4]
+        let error = self.actual_len_ge_expected().err();
+        if let Some(error_message) = error {
+            self.list_test_failed(&error_message);
+        }
         let mut prev_number_index: usize = 0;
         let mut matched_length: usize = 0;
         for expected_elem in &self.expected {
-            for actual_index in prev_number_index..self.actual.len() {
+            let start_index = prev_number_index;
+            for actual_index in start_index..self.actual.len() {
                 let actual_elem = &self.actual[actual_index];
                 if (self.element_matcher)(&actual_elem.value, &expected_elem.value) {
                     prev_number_index = actual_index;
-                    matched_length = matched_length + 1;
+                    matched_length += 1;
                     break;
                 }
             }
         }
 
         if matched_length != self.expected.len() {
-            panic!("\n the actual vec \n {} \n doesn't contains expected vec {} \n just in order. Matched only {} elements",
-                   Self::vec_to_string(&self.actual),
-                   Self::vec_to_string(&self.expected),
+            let error_message = format!("\n the Actual vec doesn't contains Expected vec Just in order. Matched only {} elements",
                    matched_length
             );
+            self.list_test_failed(&error_message);
         }
     }
 }
 
 impl<T> Length for ListAssert<T> {
     fn is(&self, expected: Expected<usize>) {
-        if self.actual.len() != expected.value {
-            panic!(
-                "\n Collection size: {} \n  not equal to expected \n {} \n",
-                self.actual.len(),
-                expected
-            );
+        let error = length_check(self.actual.len(), expected.value).err();
+        if let Some(error_message) = error {
+            test_failed(&error_message);
         }
     }
+}
+
+fn length_check(actual: usize, expected: usize) -> Result<(), String> {
+    if actual != expected {
+        return Err(format!(
+            "\n Actual collection size: {} \n          not equal to \n Expected: {} \n",
+            actual, expected,
+        ));
+    };
+    Ok(())
 }

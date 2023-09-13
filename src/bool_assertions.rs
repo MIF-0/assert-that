@@ -15,6 +15,7 @@
 //! ```
 
 use crate::assertions::BooleanCheck;
+use crate::test_failed;
 
 pub struct BooleanAssert {
     actual: bool,
@@ -37,13 +38,15 @@ impl BooleanAssert {
 impl BooleanCheck for BooleanAssert {
     fn is_true(&self) {
         if !self.actual {
-            panic!("\n Actual: {} \n is false, but should be true", self.actual);
+            let error_message = format!("Actual is: {}, but should be TRUE", self.actual);
+            test_failed(&error_message);
         }
     }
 
     fn is_false(&self) {
         if self.actual {
-            panic!("\n Actual: {} \n is true, but should be false", self.actual);
+            let error_message = format!("Actual is: {}, but should be FALSE", self.actual);
+            test_failed(&error_message);
         }
     }
 }

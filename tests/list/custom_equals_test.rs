@@ -203,7 +203,7 @@ fn custom_match(value1: &CustomObject, value2: &CustomObject) -> bool {
 
 fn custom_describe(val: &CustomObject) -> String {
     format!(
-        "CustomObject: \n a: {} \n b: {} \n c: {}",
+        "\nCustomObject:{{ \n a: {} \n b: {} \n c: {} }}",
         val.a, val.b, val.c
     )
 }

@@ -288,3 +288,8 @@ where
 
     result
 }
+
+fn test_failed(error_message: &str) {
+    let addition = "==================================================";
+    panic!("\n\n\n{}\n{}\n{}\n\n\n", addition, error_message, addition)
+}

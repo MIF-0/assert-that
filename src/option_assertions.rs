@@ -63,7 +63,7 @@
 use crate::assertions::OptionCheck;
 use crate::custom_assertions::CustomAssert;
 use crate::list_assertions::ListAssert;
-use crate::{actual, actual_vec};
+use crate::{actual, actual_vec, test_failed};
 use core::fmt::Display;
 
 pub struct OptionAssert<T> {
@@ -93,13 +93,13 @@ impl<T: 'static> OptionAssert<T> {
 impl<T: 'static> OptionCheck for OptionAssert<T> {
     fn is_none(&self) {
         if self.actual.is_some() {
-            panic!("\n Actual is Some, but should be None");
+            test_failed("Actual is Some, but should be None");
         }
     }
 
     fn is_some(&self) {
         if self.actual.is_none() {
-            panic!("\n Actual: is None, but should be Some");
+            test_failed("Actual: is None, but should be Some");
         }
     }
 }

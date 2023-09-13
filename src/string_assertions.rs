@@ -21,7 +21,7 @@
 //! ```
 
 use crate::assertions::{Contains, Equals, Length, NotEquals};
-use crate::{Actual, Expected};
+use crate::{test_failed, Actual, Expected};
 
 pub struct StringAssert {
     actual: Actual<String>,
@@ -52,10 +52,11 @@ impl StringAssert {
 impl Equals<String> for StringAssert {
     fn to(&self, expected: Expected<String>) {
         if self.actual.ne(&expected) {
-            panic!(
-                "\n Actual: {} \n not equal to expected \n {} \n",
+            let error_message = format!(
+                "\n Actual: {} \n not equal to \n  Expected: {} \n",
                 self.actual, expected
             );
+            test_failed(&error_message);
         }
     }
 }
@@ -63,10 +64,11 @@ impl Equals<String> for StringAssert {
 impl NotEquals<String> for StringAssert {
     fn to(&self, expected: Expected<String>) {
         if self.actual.eq(&expected) {
-            panic!(
-                "\n Actual: {} \n not equal to expected \n {} \n",
+            let error_message = format!(
+                "\n Actual: {} \n not equal to \n  Expected: {} \n",
                 self.actual, expected
             );
+            test_failed(&error_message);
         }
     }
 }
@@ -74,10 +76,11 @@ impl NotEquals<String> for StringAssert {
 impl Length for StringAssert {
     fn is(&self, expected: Expected<usize>) {
         if self.actual.value.len() != expected.value {
-            panic!(
+            let error_message = format!(
                 "\n Actual: {} \n length not equal to expected \n {} \n",
                 self.actual, expected
             );
+            test_failed(&error_message);
         }
     }
 }
@@ -85,10 +88,11 @@ impl Length for StringAssert {
 impl Contains<String> for StringAssert {
     fn contains(&self, expected: Expected<String>) {
         if !self.actual.value.contains(&expected.value) {
-            panic!(
-                "\n Actual: {} \n does not contains expected \n {} \n",
+            let error_message = format!(
+                "\n Actual: {} \n does not contains \n  Expected: {} \n",
                 self.actual, expected
             );
+            test_failed(&error_message);
         }
     }
 }

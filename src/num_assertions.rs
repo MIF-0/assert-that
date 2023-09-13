@@ -29,7 +29,7 @@
 //!  .than(expected(3));
 //! ```
 
-use crate::{Actual, Expected};
+use crate::{test_failed, Actual, Expected};
 use num_traits::Num;
 
 use crate::assertions::{Equals, Greater, GreaterOrEqual, Less, LessOrEqual, NotEquals};
@@ -81,10 +81,11 @@ where
 {
     fn to(&self, expected: Expected<T>) {
         if self.actual.ne(&expected) {
-            panic!(
+            let error_message = format!(
                 "\n Actual: {} \n not equal to expected \n {} \n",
                 self.actual, expected
             );
+            test_failed(&error_message);
         }
     }
 }
@@ -95,10 +96,11 @@ where
 {
     fn to(&self, expected: Expected<T>) {
         if self.actual.eq(&expected) {
-            panic!(
+            let error_message = format!(
                 "\n Actual: {} \n is equal to expected \n {} \n",
                 self.actual, expected
             );
+            test_failed(&error_message);
         }
     }
 }
@@ -109,10 +111,11 @@ where
 {
     fn than(&self, expected: Expected<T>) {
         if self.actual.value >= expected.value {
-            panic!(
+            let error_message = format!(
                 "\n Actual: {} \n is bigger or equal to expected \n {} \n",
                 self.actual, expected
             );
+            test_failed(&error_message);
         }
     }
 }
@@ -123,10 +126,11 @@ where
 {
     fn to(&self, expected: Expected<T>) {
         if self.actual.value > expected.value {
-            panic!(
+            let error_message = format!(
                 "\n Actual: {} \n is bigger to expected \n {} \n",
                 self.actual, expected
             );
+            test_failed(&error_message);
         }
     }
 }
@@ -137,10 +141,11 @@ where
 {
     fn than(&self, expected: Expected<T>) {
         if self.actual.value <= expected.value {
-            panic!(
+            let error_message = format!(
                 "\n Actual: {} \n is smaller or equal to expected \n {} \n",
                 self.actual, expected
             );
+            test_failed(&error_message);
         }
     }
 }
@@ -151,10 +156,11 @@ where
 {
     fn to(&self, expected: Expected<T>) {
         if self.actual.value < expected.value {
-            panic!(
+            let error_message = format!(
                 "\n Actual: {} \n is smaller to expected \n {} \n",
                 self.actual, expected
             );
+            test_failed(&error_message);
         }
     }
 }

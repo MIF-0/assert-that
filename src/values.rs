@@ -36,8 +36,4 @@ where
     fn eq(&self, other: &Self) -> bool {
         self.value.eq(&other.value)
     }
-
-    fn ne(&self, other: &Self) -> bool {
-        self.value.ne(&other.value)
-    }
 }

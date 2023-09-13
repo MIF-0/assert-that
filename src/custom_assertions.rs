@@ -41,7 +41,7 @@
 //! ```
 
 use crate::assertions::Matches;
-use crate::{Actual, Expected};
+use crate::{test_failed, Actual, Expected};
 
 pub struct CustomAssert<T> {
     actual: Actual<T>,
@@ -72,10 +72,11 @@ impl<T> Matches<T> for CustomMatcher<T> {
     fn to(&self, expected: Expected<T>) {
         let success = (self.matcher)(&self.actual.value, &expected.value);
         if !success {
-            panic!(
-                "\n Actual: {} \n not matches with \n {} \n",
+            let error_message = format!(
+                "\n Actual: {} \n not matches with \n Expected: {} \n",
                 self.actual, expected
             );
+            test_failed(&error_message);
         }
     }
 }
