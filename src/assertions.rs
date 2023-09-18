@@ -61,8 +61,31 @@ pub trait CollectionContains<T> {
     fn just_in_order(&self);
 }
 
+pub trait CollectionNotContain<T> {
+    // [A,B,C,D,E].does_not_contain([A,B,C]).all() = false
+    // [A,B,C,D,E].does_not_contain([A,B,F]).all() = false
+    // [A,B,C,D,E].does_not_contain([F,G,J]).all() = true
+    fn all(&self);
+
+    // [A,B,C,D,E].does_not_contain([A,B,C]).at_least_one() = false
+    // [A,B,C,D,E].does_not_contain([A,B,F]).at_least_one() = true
+    // [A,B,C,D,E].does_not_contain([F,G,J]).at_least_one() = true
+    fn at_least_one(&self);
+}
+
 pub trait CollectionEqual<T> {
     fn in_any_order(&self);
 
+    fn in_order(&self);
+}
+
+pub trait CollectionNotEqual<T> {
+    // [A,B,C,D].is_not_equal(A,B,C,D).in_any_order() = false
+    // [A,B,C,D].is_not_equal(D,C,B,A).in_any_order() = false
+    // [A,B,C,D].is_not_equal(B,B,C,D).in_any_order() = true
+    fn in_any_order(&self);
+
+    // [A,B,C,D].is_not_equal(A,B,C,D).in_order() = false
+    // [A,B,C,D].is_not_equal(D,C,B,A).in_order() = true
     fn in_order(&self);
 }

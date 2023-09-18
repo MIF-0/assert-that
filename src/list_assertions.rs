@@ -70,7 +70,9 @@
 //! }
 //! ```
 
-use crate::assertions::{CollectionContains, CollectionEqual, Length};
+use crate::assertions::{
+    CollectionContains, CollectionEqual, CollectionNotContain, CollectionNotEqual, Length,
+};
 use crate::{test_failed, Actual, Expected};
 use std::collections::HashMap;
 
@@ -115,7 +117,23 @@ where
         })
     }
 
+    pub fn does_not_contain(self, expected: Vec<Expected<T>>) -> Box<dyn CollectionNotContain<T>> {
+        Box::new(ListFinalAssert {
+            actual: self.actual,
+            expected,
+            element_matcher: self.element_matcher,
+        })
+    }
+
     pub fn is_equal_to(self, expected: Vec<Expected<T>>) -> Box<dyn CollectionEqual<T>> {
+        Box::new(ListFinalAssert {
+            actual: self.actual,
+            expected,
+            element_matcher: self.element_matcher,
+        })
+    }
+
+    pub fn is_not_equal_to(self, expected: Vec<Expected<T>>) -> Box<dyn CollectionNotEqual<T>> {
         Box::new(ListFinalAssert {
             actual: self.actual,
             expected,
@@ -130,6 +148,9 @@ struct ListFinalAssert<T> {
     element_matcher: fn(&T, &T) -> bool,
 }
 
+type ActualIndex = usize;
+type ExpectedIndex = usize;
+
 impl<T> ListFinalAssert<T> {
     fn vec_to_string(vec: &[Actual<T>]) -> String {
         vec.iter()
@@ -138,39 +159,22 @@ impl<T> ListFinalAssert<T> {
             .join(",")
     }
 
-    fn in_any_order_ignore_size(&self) {
+    fn contains_in_any_order(&self) -> Result<(), String> {
         //[1,2,3,4,5].contains[5,3,1]
-        let mut equals_indexes: HashMap<usize, usize> = HashMap::new();
+
         let mut errors: Vec<String> = vec![];
-
-        for (expected_index, expected_elem) in self.expected.iter().enumerate() {
-            let mut match_found = false;
-
-            for (actual_index, actual_elem) in self.actual.iter().enumerate() {
-                let actual_index_was_matched = equals_indexes.get(&actual_index).is_some();
-                if actual_index_was_matched {
-                    continue;
-                }
-
-                let elements_matches =
-                    (self.element_matcher)(&actual_elem.value, &expected_elem.value);
-                if elements_matches {
-                    equals_indexes.insert(actual_index, expected_index);
-                    match_found = true;
-                    break;
-                }
-            }
-            if !match_found {
-                errors.push(format!(
-                    "   - Expected element: ({}) - Not found",
-                    expected_elem
-                ));
-            }
+        let expected_diff = self.only_in_expected();
+        for expected_index in expected_diff {
+            errors.push(format!(
+                "   - Expected element: ({}) - Not found",
+                self.expected[expected_index]
+            ));
         }
 
-        if !errors.is_empty() {
-            self.list_test_failed(&errors.join("\n"));
+        if errors.is_empty() {
+            return Ok(());
         }
+        Err(errors.join("\n"))
     }
 
     fn get_unchecked_index(
@@ -230,6 +234,64 @@ impl<T> ListFinalAssert<T> {
         );
         test_failed(&list_error_message);
     }
+
+    fn only_in_expected(&self) -> Vec<ExpectedIndex> {
+        let (_, only_in_expected) = self.difference_ignoring_position();
+
+        only_in_expected
+    }
+
+    fn difference_ignoring_position(&self) -> (Vec<ActualIndex>, Vec<ExpectedIndex>) {
+        let intersection = self.intersection_indexes();
+        if intersection.len() == self.actual.len() && intersection.len() == self.expected.len() {
+            return (vec![], vec![]);
+        }
+
+        let mut actual_existing: Vec<bool> = vec![false; self.actual.len()];
+        let mut expected_existing: Vec<bool> = vec![false; self.expected.len()];
+        for (actual_index, expected_index) in intersection {
+            actual_existing[actual_index] = true;
+            expected_existing[expected_index] = true;
+        }
+
+        let mut only_in_actual = vec![];
+        for (index, exist) in actual_existing.iter().enumerate() {
+            if !exist {
+                only_in_actual.push(index);
+            }
+        }
+
+        let mut only_in_expected = vec![];
+        for (index, exist) in expected_existing.iter().enumerate() {
+            if !exist {
+                only_in_expected.push(index);
+            }
+        }
+
+        (only_in_actual, only_in_expected)
+    }
+
+    fn intersection_indexes(&self) -> HashMap<ActualIndex, ExpectedIndex> {
+        let mut equals_indexes: HashMap<usize, usize> = HashMap::new();
+
+        for (expected_index, expected_elem) in self.expected.iter().enumerate() {
+            for (actual_index, actual_elem) in self.actual.iter().enumerate() {
+                let actual_index_was_matched = equals_indexes.get(&actual_index).is_some();
+                if actual_index_was_matched {
+                    continue;
+                }
+
+                let elements_matches =
+                    (self.element_matcher)(&actual_elem.value, &expected_elem.value);
+                if elements_matches {
+                    equals_indexes.insert(actual_index, expected_index);
+                    break;
+                }
+            }
+        }
+
+        equals_indexes
+    }
 }
 
 impl<T> CollectionEqual<T> for ListFinalAssert<T> {
@@ -238,7 +300,10 @@ impl<T> CollectionEqual<T> for ListFinalAssert<T> {
         if let Some(error_message) = error {
             self.list_test_failed(&error_message);
         }
-        self.in_any_order_ignore_size();
+        let result = self.contains_in_any_order();
+        if let Some(error) = result.err() {
+            self.list_test_failed(&error);
+        }
     }
 
     fn in_order(&self) {
@@ -253,7 +318,7 @@ impl<T> CollectionEqual<T> for ListFinalAssert<T> {
             let expected_elem = &self.expected[index];
             if !(self.element_matcher)(&actual_elem.value, &expected_elem.value) {
                 errors.push(format!(
-                    "Actual element: ({}) not equal to expected: ({}) in position ({})\n",
+                    "Actual element: ({}) not equal to Expected: ({}) in position ({})\n",
                     actual_elem, expected_elem, index
                 ));
             }
@@ -266,9 +331,40 @@ impl<T> CollectionEqual<T> for ListFinalAssert<T> {
     }
 }
 
+impl<T> CollectionNotEqual<T> for ListFinalAssert<T> {
+    fn in_any_order(&self) {
+        if self.actual.len() != self.expected.len() {
+            return;
+        }
+        let result = self.contains_in_any_order();
+        if result.is_ok() {
+            self.list_test_failed("Collections are equals, but should not. Collections considered equals if they has same elements in any order.");
+        }
+    }
+
+    fn in_order(&self) {
+        if self.actual.len() != self.expected.len() {
+            return;
+        }
+
+        for index in 0..self.actual.len() {
+            let actual_elem = &self.actual[index];
+            let expected_elem = &self.expected[index];
+            if !(self.element_matcher)(&actual_elem.value, &expected_elem.value) {
+                return;
+            }
+        }
+
+        self.list_test_failed("Collections has same elements in same order, they are equal");
+    }
+}
+
 impl<T> CollectionContains<T> for ListFinalAssert<T> {
     fn in_any_order(&self) {
-        self.in_any_order_ignore_size();
+        let result = self.contains_in_any_order();
+        if let Some(error) = result.err() {
+            self.list_test_failed(&error);
+        }
     }
 
     fn in_exact_order(&self) {
@@ -305,8 +401,8 @@ impl<T> CollectionContains<T> for ListFinalAssert<T> {
 
     fn just_in_order(&self) {
         //[1,2,8,9,5,7,3,1,4].contains[2,3,4]
-        let error = self.actual_len_ge_expected().err();
-        if let Some(error_message) = error {
+        let result = self.actual_len_ge_expected();
+        if let Some(error_message) = result.err() {
             self.list_test_failed(&error_message);
         }
         let mut prev_number_index: usize = 0;
@@ -328,6 +424,35 @@ impl<T> CollectionContains<T> for ListFinalAssert<T> {
                    matched_length
             );
             self.list_test_failed(&error_message);
+        }
+    }
+}
+
+impl<T> CollectionNotContain<T> for ListFinalAssert<T> {
+    fn all(&self) {
+        if self.actual.len() < self.expected.len() {
+            return;
+        }
+
+        let intersection = self.intersection_indexes();
+        if intersection.is_empty() {
+            return;
+        }
+
+        let mut errors: Vec<String> = vec![];
+        for (actual_index, expected_index) in intersection {
+            errors.push(format!(
+                "   - Element was found ({}). Actual index ({}), Expected index ({})",
+                &self.actual[actual_index], actual_index, expected_index,
+            ));
+        }
+        self.list_test_failed(&errors.join("\n"));
+    }
+
+    fn at_least_one(&self) {
+        let intersection = self.intersection_indexes();
+        if intersection.len() == self.expected.len() {
+            self.list_test_failed("All expected elements were found in Actual vec");
         }
     }
 }
