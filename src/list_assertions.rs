@@ -28,6 +28,26 @@
 //!  .with_element_matcher(|a, b| a.eq(b))
 //!  .contains(expected_vec(vec![5, 1, 2]))
 //!  .in_any_order();
+//!
+//!  ListAssert::assert_that(actual_vec(vec![2, 1, 3, 5, 4]))
+//!  .with_element_matcher(|a, b| a.eq(b))
+//!  .does_not_contain(expected_vec(vec![5, 1, 6]))
+//!  .at_least_one();
+//!
+//!  ListAssert::assert_that(actual_vec(vec![2, 1, 3, 5, 4]))
+//!  .with_element_matcher(|a, b| a.eq(b))
+//!  .does_not_contain(expected_vec(vec![12, 14, 16]))
+//!  .all();
+//!
+//!  ListAssert::assert_that(actual_vec(vec![2, 1, 3, 5, 4]))
+//!  .with_element_matcher(|a, b| a.eq(b))
+//!  .is_not_equal_to(expected_vec(vec![1, 2, 3, 5, 4]))
+//!  .in_order();
+//!
+//!  ListAssert::assert_that(actual_vec(vec![2, 1, 3, 5, 4]))
+//!  .with_element_matcher(|a, b| a.eq(b))
+//!  .is_not_equal_to(expected_vec(vec![2, 1, 3, 5, 6]))
+//!  .in_any_order();
 //! ```
 //!
 //! ### Custom objects

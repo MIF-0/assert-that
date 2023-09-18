@@ -3,7 +3,7 @@ easy-assert crate, which will help you to create better tests
 Add dependency to your `Cargo.toml`
 ```
 [dev-dependencies]
-assert-that = "0.1.5"
+assert-that = "0.2.1"
 ```
 
 
@@ -36,11 +36,18 @@ ListAssert ->
     with_element_matcher ->
         is_equal_to ->
             in_any_order;
-            in_order
+            in_order;
         contains ->
             in_any_order;
-            in_exact_order; [A,B,C,A,D].contains([B,C]).in_exact_order() = true/[A,B,C,A,D].contains([B,D]).in_exact_order() = false
-            just_in_order; [A,B,C,A,D].contains([B,C]).in_exact_order() = true/[A,B,C,A,D].contains([B,D]).in_exact_order() = true
+            in_exact_order; - [A,B,C,A,D].contains([B,C]).in_exact_order() = true/[A,B,C,A,D].contains([B,D]).in_exact_order() = false
+            just_in_order; - [A,B,C,A,D].contains([B,C]).in_exact_order() = true/[A,B,C,A,D].contains([B,D]).in_exact_order() = true
+        is_not_equal_to ->
+            in_any_order; - At least one element should be different
+            in_order; - All elements can be same, but order different
+        does_not_contain ->
+            all(); - All elements from expected should be missed in actual
+            at_least_one(); - At least one element from expected should be missed in actual
+        
 ```
 `CustomAssert -> matches_by`
 
